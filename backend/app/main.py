@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,15 +37,18 @@ async def lifespan(app: FastAPI):
         seed_auth_accounts(db)
     finally:
         db.close()
-    expiry_task = asyncio.create_task(_expire_transfer_handshakes())
+    expiry_task = None
+    if os.getenv("VERCEL") != "1":
+        expiry_task = asyncio.create_task(_expire_transfer_handshakes())
     try:
         yield
     finally:
-        expiry_task.cancel()
-        try:
-            await expiry_task
-        except asyncio.CancelledError:
-            pass
+        if expiry_task:
+            expiry_task.cancel()
+            try:
+                await expiry_task
+            except asyncio.CancelledError:
+                pass
 
 app = FastAPI(
     title="MEDICYCLE Supply Network API",

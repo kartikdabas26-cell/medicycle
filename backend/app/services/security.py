@@ -5,7 +5,10 @@ import json
 import os
 import time
 
-JWT_SECRET = os.getenv("MEDICYCLE_JWT_SECRET", "medicycle-v2-local-demo-secret-change-before-deployment")
+JWT_SECRET = os.getenv("MEDICYCLE_JWT_SECRET")
+if os.getenv("VERCEL") == "1" and (not JWT_SECRET or len(JWT_SECRET) < 32):
+    raise RuntimeError("Set MEDICYCLE_JWT_SECRET to at least 32 characters for Vercel deployments")
+JWT_SECRET = JWT_SECRET or "medicycle-v2-local-demo-secret-change-before-deployment"
 
 
 def hash_password(password: str) -> str:

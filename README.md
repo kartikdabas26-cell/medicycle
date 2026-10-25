@@ -63,7 +63,7 @@ The single application runs at `http://127.0.0.1:5175`. Start at `/portal` to ch
 ## 3. Technology Stack
 
 - **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Lucide Icons, Recharts and Canvas Confetti; Web Speech API voice search and a large-font Assist Mode.
-- **Backend:** Python, FastAPI, SQLAlchemy, SQLite, Pandas, NumPy, Pytest.
+- **Backend:** Python, FastAPI, SQLAlchemy, SQLite for local development or PostgreSQL for deployment, Pandas, NumPy, Pytest.
 - **AI Engine:** Contextually grounded synthesis engine with optional Google Gemini integration (`GEMINI_API_KEY`). **Runs 100% offline without requiring paid API keys!**
 
 ---
@@ -134,6 +134,10 @@ cd frontend
 npm run build
 npm test
 ```
+
+### Vercel deployment
+
+The root `vercel.json` configures the frontend and backend as separate services. The backend handles public `/api/*` requests; all other paths are routed to the frontend. Configure `DATABASE_URL` in the Vercel project settings to point to a managed PostgreSQL database, and set `MEDICYCLE_JWT_SECRET` to a long, random secret. Do not commit database credentials or secrets. Without `DATABASE_URL`, the backend uses local SQLite, which is suitable for development but is not persistent storage for a Vercel deployment.
 
 The network API is available at `/api/network` and its interactive OpenAPI documentation at `http://127.0.0.1:8000/docs`. Obtain a demo JWT by posting `{"role":"Hospital"}` (or `Chemist`, `Supplier`, `Network Admin`) to `/api/network/auth/demo`; include it as `Authorization: Bearer <access_token>` for protected network endpoints.
 

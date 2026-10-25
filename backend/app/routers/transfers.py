@@ -288,7 +288,13 @@ def _offer_next_donor(db: Session, requisition_key: str) -> TransferRequest | No
 
 
 def _ensure_initial_offers(db: Session) -> None:
-    db.execute(text("BEGIN IMMEDIATE"))
+    dialect = db.get_bind().dialect.name
+    if dialect == "sqlite":
+        db.execute(text("BEGIN IMMEDIATE"))
+    elif dialect == "postgresql":
+        db.execute(text("SELECT pg_advisory_xact_lock(73120419)"))
+    else:
+        raise RuntimeError(f"Unsupported database dialect for transfer offer locking: {dialect}")
     open_requests = db.query(TransferRequest).filter(
         TransferRequest.status == "PENDING_DONOR_CONSENT",
     ).order_by(TransferRequest.created_at).all()

@@ -2,7 +2,6 @@ import base64
 import hashlib
 import hmac
 import json
-import os
 import time
 import uuid
 from datetime import date, datetime, timedelta
@@ -24,10 +23,10 @@ from ..models import (
     TransferRequest,
     WeeklyConsumption,
 )
+from ..services.security import JWT_SECRET
 
 router = APIRouter(prefix="/api/network", tags=["network-v2"])
 ROLES = {"Hospital", "Chemist", "Supplier", "Network Admin", "patient"}
-JWT_SECRET = os.getenv("MEDICYCLE_JWT_SECRET", "medicycle-v2-local-demo-secret-change-before-deployment")
 
 NETWORK_FACILITIES = [
     ("NET-H01", "Central Civil Hospital", "Hospital", "Central District"),
